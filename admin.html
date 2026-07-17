@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FloStore - Paneli i Adminit</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Stile specifike vetëm për faqen e Adminit që përshtaten me stilin e ri */
+        .admin-page-container {
+            max-width: 1100px;
+            margin: 120px auto 60px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        @media (min-width: 900px) {
+            .admin-page-container {
+                grid-template-columns: 450px 1fr;
+            }
+        }
+
+        .admin-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0,0,0,0.03);
+            padding: 30px;
+            height: fit-content;
+        }
+
+        .admin-card-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .admin-card-title i {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .admin-card-title h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .admin-card-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px 14px 45px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: var(--bg-light);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea.form-control {
+            padding-left: 16px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Tabela e Porosive */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            background: var(--white);
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .orders-table th {
+            background: #f1f5f9;
+            color: var(--text-main);
+            padding: 16px;
+            font-weight: 600;
+        }
+
+        .orders-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-muted);
+        }
+
+        .orders-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+
+        .alert-error {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigimi i thjeshtuar për Admin -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-bag-shopping"></i> FloStore <span style="font-size: 12px; background: #e0e7ff; padding: 2px 8px; border-radius: 50px; margin-left: 5px;">Admin</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-arrow-left-long"></i> Kthehu te Dyqani</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Përmbajtja kryesore -->
+    <div class="admin-page-container">
+        
+        <!-- 1. Paneli i Menaxhimit (Shtimi i Produkteve) -->
+        <div class="admin-card">
+            <div class="admin-card-title">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <h2>Panel Menaxhimi</h2>
+                <p>Shto produkte të reja në dyqanin tënd online</p>
+            </div>
+
+            <div id="productAlert" class="alert-error"></div>
+
+            <form id="addProductForm" onsubmit="handleNewProduct(event)">
+                <div class="form-group">
+                    <label>Kodi i Sigurisë së Adminit</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="adminCode" class="form-control" placeholder="Shkruaj kodin" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Emri i Produktit</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-tag"></i>
+                        <input type="text" id="productName" class="form-control" placeholder="p.sh. Nike Air Max" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Çmimi i Produktit (€)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-euro-sign"></i>
+                        <input type="number" step="0.01" id="productPrice" class="form-control" placeholder="p.sh. 35.00" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>URL e Fotos së Produktit</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-image"></i>
+                        <input type="url" id="productImage" class="form-control" placeholder="https://linku-i-fotos.jpg" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Përshkrimi (Rreth Produktit)</label>
+                    <textarea id="productDesc" class="form-control" placeholder="Shkruaj detajet e produktit..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fa-solid fa-plus"></i> Publiko Produktin
+                </button>
+            </form>
+        </div>
+
+        <!-- 2. Menaxhimi i Porosive -->
+        <div class="admin-card" style="width: 100%;">
+            <div class="admin-card-title" style="text-align: left; display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <i class="fa-solid fa-list-check" style="font-size: 24px; margin-bottom: 0;"></i>
+                <div>
+                    <h2 style="font-size: 18px;">Menaxhimi i Porosive</h2>
+                    <p>Lista e blerjeve të fundit nga klientët</p>
+                </div>
+            </div>
+
+            <div id="orderAlert" class="alert-error"></div>
+
+            <div class="table-responsive">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Klienti / Kontakti</th>
+                            <th>Adresa</th>
+                            <th>Produktet</th>
+                            <th>Totali</th>
+                            <th>Statusi</th>
+                            <th>Aksioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Porositë ngarkohen këtu -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        // Porositë Rezervë (nëse dështon lidhja me backend-in)
+        const fallbackOrders = [
+            {
+                _id: '101',
+                data: '17/07/2026',
+                klienti: 'Arben Gashi',
+                kontakti: '044123456',
+                adresa: 'Prishtinë, Qendër',
+                produktet: 'Nike Air Max (x1)',
+                totali: 120.00,
+                statusi: 'Në Pritje'
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchOrders();
+        });
+
+        // 1. Marrja e porosive nga Serveri
+        async function fetchOrders() {
+            const tableBody = document.getElementById('ordersTableBody');
+            const alertBox = document.getElementById('orderAlert');
+            
+            try {
+                const response = await fetch(`${API_URL}/orders`);
+                if (!response.ok) throw new Error();
+                const orders = await response.json();
+                renderOrders(orders);
+            } catch (error) {
+                console.warn("Po përdoren të dhënat rezervë për porositë.");
+                alertBox.style.display = "block";
+                alertBox.textContent = "Nuk u lidh me serverin. Po shfaqen porositë e ruajtura përkohësisht.";
+                renderOrders(fallbackOrders);
+            }
+        }
+
+        function renderOrders(orders) {
+            const tableBody = document.getElementById('ordersTableBody');
+            tableBody.innerHTML = '';
+
+            if(orders.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Në pritej të porosive të reja...</td></tr>`;
+                return;
+            }
+
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+                const badgeClass = order.statusi === 'Në Pritje' ? 'pending' : 'completed';
+                
+                tr.innerHTML = `
+                    <td>${order.data || 'Sot'}</td>
+                    <td><strong>${order.klienti}</strong><br><small>${order.kontakti}</small></td>
+                    <td>${order.adresa}</td>
+                    <td>${order.produktet}</td>
+                    <td style="font-weight: 700; color: var(--primary-color);">${parseFloat(order.totali).toFixed(2)} €</td>
+                    <td><span class="status-badge ${badgeClass}">${order.statusi}</span></td>
+                    <td>
+                        ${order.statusi === 'Në Pritje' ? `<button class="action-btn" onclick="completeOrder('${order._id}')">Përfundo</button>` : 'Kryer'}
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // 2. Shtimi i një produkti të ri
+        async function handleNewProduct(event) {
+            event.preventDefault();
+            const alertBox = document.getElementById('productAlert');
+            alertBox.style.display = "none";
+
+            const produktiiRi = {
+                kodi: document.getElementById('adminCode').value,
+                emri: document.getElementById('productName').value,
+                qmimi: parseFloat(document.getElementById('productPrice').value),
+                foto: document.getElementById('productImage').value,
+                pershkrimi: document.getElementById('productDesc').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(produktiiRi)
+                });
+
+                if (response.ok) {
+                    alert("Produkti u shtua me sukses!");
+                    document.getElementById('addProductForm').reset();
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.message || "Dështoi shtimi i produktit.");
+                }
+            } catch (error) {
+                alertBox.style.display = "block";
+                alertBox.textContent = error.message || "Gabim! Serveri nuk po përgjigjet.";
+            }
+        }
+
+        // 3. Ndryshimi i statusit të porosisë
+        async function completeOrder(id) {
+            try {
+                const response = await fetch(`${API_URL}/orders/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ statusi: 'Përfunduar' })
+                });
+                if(response.ok) {
+                    fetchOrders();
+                }
+            } catch (error) {
+                alert("Nuk u bë dot përditësimi pa serverin aktiv.");
+            }
+        }
+    </script>
+</body>
+</html>
